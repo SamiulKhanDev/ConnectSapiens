@@ -35,6 +35,7 @@ img {
 /* Custom CSS , that will be applied to entire App and it's child component */
 body {
     background: #121212;
+    /* background: transparent; */
     font-family: 'Nunito', sans-serif;
     color: #fff;
 }

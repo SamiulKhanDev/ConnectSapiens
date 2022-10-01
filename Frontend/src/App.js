@@ -1,5 +1,6 @@
 import "./App.css";
 import HomePage from "./Pages/Home/HomePage";
+import ParticlesBackground from "./ParticleConfig/ParticlesBackground";
 import {
   BrowserRouter as Router,
   Switch,
@@ -11,40 +12,43 @@ import Authenticate from "./Pages/Authenticate/Authenticate";
 import Activate from "./Pages/Activate/Activate";
 import Rooms from "./Pages/Rooms/Rooms";
 
-const isAuth = false;
+const isAuth = false; //we will get this from out state provider;
 const user = {
   isActivate: false,
-};
+}; //we will get this from out state provider;
 function App() {
   return (
     <Router>
+      <ParticlesBackground />
       <Navigation />
       <Switch>
+        {/* GuestRoute is a component that will provide routing for its children
+        components for the guest user, that is users who have not yet logged in
+        ,if logged in will directly move them to rooms */}
         <GuestRoute exact path="/">
           <HomePage />
         </GuestRoute>
-        {/* <Route path='/register'>
-          <Register/>
-        </Route> */}
         <GuestRoute path="/authenticate">
           <Authenticate />
         </GuestRoute>
-
+        {/* Semiprotected will provide routing for its children for the users who
+        have logged in and wants to upload metadata, if not logged in will move
+        to homepage.if both logged in and already have uploaded metadata,will
+        move them to rooms */}
         <SemiProtectedRoute path="/activate">
           <Activate />
         </SemiProtectedRoute>
-
+        {/* protedted routes are for them who have logged in,uploaded metadata ..
+        protedted routes basically moves them to rooms */}
         <ProtectedRoute path="/rooms">
           <Rooms />
         </ProtectedRoute>
-
-        {/* GuestRoute is a component that will provide protected routing for its children components */}
       </Switch>
     </Router>
   );
 }
 
-const GuestRoute = ({ children, ...obj }) => {
+const GuestRoute = ({ children, ...props }) => {
   // As GuestRoute is also returning a Route component, it is acting like a route component.
   // But now we can write all the checks to provide protected routing here.
 
@@ -56,7 +60,7 @@ const GuestRoute = ({ children, ...obj }) => {
   //This is Private routing in react router dom.
   return (
     <Route
-      {...obj}
+      {...props}
       render={({ location }) =>
         isAuth ? (
           <Redirect
@@ -73,14 +77,14 @@ const GuestRoute = ({ children, ...obj }) => {
   );
 };
 
-const SemiProtectedRoute = ({ children, ...obj }) => {
+const SemiProtectedRoute = ({ children, ...props }) => {
   //For semiProtected area such as StepUsername and StepAvatar,
   // only the logged in users who have not yet updated thoes information will redirected to thoes
   // pages. If the user is logged in and isActivate(username ,avatar already uploaded) then the user will directly
   // be redirected to rooms.
   return (
     <Route
-      {...obj}
+      {...props}
       render={({ location }) =>
         !isAuth ? (
           <Redirect
@@ -104,14 +108,14 @@ const SemiProtectedRoute = ({ children, ...obj }) => {
   );
 };
 
-const ProtectedRoute = ({ children, ...obj }) => {
+const ProtectedRoute = ({ children, ...props }) => {
   //For semiProtected area such as StepUsername and StepAvatar,
   // only the logged in users who have not yet updated thoes information will redirected to thoes
   // pages. If the user is logged in and isActivate(username ,avatar already uploaded) then the user will directly
   // be redirected to rooms.
   return (
     <Route
-      {...obj}
+      {...props}
       render={({ location }) =>
         !isAuth ? (
           <Redirect
