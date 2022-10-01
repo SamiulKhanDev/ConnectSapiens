@@ -1,1 +1,23 @@
 node_modules/
+.pnp/
+.pnp.js
+
+# testing
+coverage/
+
+# production
+build/
+
+# misc
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+Screenshot 2022-09-27 at 11.28.23 PM.png
+Screenshot 2022-09-30 at 12.19.55 AM.png
+Screenshot 2022-09-30 at 12.27.48 AM.png
