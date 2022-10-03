@@ -1,12 +1,12 @@
-require("dotenv").config();
-require("./database").db();
+require("dotenv").config();//to config dotenv,only in main entry point
+require("./database").db();//connecting with mongodb database
 const express = require("express");
-const bodyParser = require("body-parser");
+const bodyParser = require("body-parser");//required for express to understand json req body
 const app = express();
 app.use(bodyParser.urlencoded({ extended: false })); // parse application/x-www-form-urlencoded
 app.use(bodyParser.json()); // parse application/json
 const port = process.env.PORT || 3001;
-app.use("/", require("./routes"));
+app.use("/", require("./routes"));//all the routes are maitained in diffrenet folder
 
 app.listen(port, () => {
   console.log("Server is up");

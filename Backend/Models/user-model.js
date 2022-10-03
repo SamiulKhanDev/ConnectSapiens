@@ -5,7 +5,7 @@ const userSchema = new mongoose.Schema(
     activated: { type: Boolean, required: false, default: false },
   },
   {
-    timestamps: true,
+    timestamps: true,//adding timestamp, like when the doc was added or updated.
   }
 );
 

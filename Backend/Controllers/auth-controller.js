@@ -1,65 +1,60 @@
-const { otpService } = require("../Services/otp-service");
-const { hashService } = require("../Services/hash-service");
-const { userService } = require("../Services/user-service");
-const { tokenService } = require("../Services/token-service");
+const { otpService } = require("../Services/otp-service"); //service to genearate, send by sms and verify otp
+const { hashService } = require("../Services/hash-service"); //service to hash the otp.
+const { userService } = require("../Services/user-service"); //service to create user, or to find user if already present in the database
+const { tokenService } = require("../Services/token-service"); //to generate JWT token to provide access.
 class AuthController {
   async sendOtp(req, res) {
-    const { phone } = req.body;
+    const { phone } = req.body; //getting the phone number where we have to send the otp
 
     if (!phone) {
-      res.status(400).json({ error: "phone number is required" });
+      return res.status(400).json({ error: "phone number is required" }); //if phone number is not provided.
     }
-    const otp = await otpService.generateOtp();
+    const otp = await otpService.generateOtp(); //if phone is provided generate otp.
 
-    const ttl = 1000 * 60 * 2; //this otp will be valid only for 2 min;
-    const expires = Date.now() + ttl;
-    const data = `${phone}.${otp}.${expires}`;
-    const hashOtp = hashService.hashOtp(data);
+    const ttl = 1000 * 60 * 2; //this otp will be valid only for 2 min; time to live .
+    const expires = Date.now() + ttl; //calculating the expiry time by adding "ttl" with the current time.
+    const data = `${phone}.${otp}.${expires}`; //expires field is required to see if the otp is still time valid or not.
+    const hashOtp = hashService.hashOtp(data); // creating a hash of the data.
 
     try {
-      await otpService.sendBySms(phone, otp);
-      res.json({
+      await otpService.sendBySms(phone, otp); //now sending the otp in the given number.
+      return res.json({
         hash: `${hashOtp}.${expires}`,
         phone: phone,
       });
     } catch (error) {
-      res.status(500).json({ error: error });
+      return res.status(500).json({ error: error });
     }
   }
 
   async verifyOtp(req, res) {
-    const { phone, hash, otp } = req.body; //we need all this three to regenaate the hash,and compare with the exsisting hashcode
+    const { phone, hash, otp } = req.body; //we need all this three fields to regenaate the hash,and compare with the exsisting hashcode
     if (!phone || !hash || !otp) {
-      res.status(400).json({ error: "please provide all the values" });
-      return;
+      return res.status(400).json({ error: "please provide all the values" }); //if any one of them is missing.
     }
 
-    const [hashedOtp, expires] = hash.split(".");
+    const [hashedOtp, expires] = hash.split("."); //getting the expirey time.
     if (Date.now() > parseInt(expires)) {
+      //checking if the otp is still valid or not.
       //as expires will be a string we have to convert it in a number
-      res.status(400).json({ error: "Otp hash been expired" });
-      return;
+      return res.status(400).json({ error: "Otp hash been expired" });
     }
 
-    const data = `${phone}.${otp}.${expires}`;
-    const isValid = otpService.verifyOtp(data, hashedOtp);
+    const data = `${phone}.${otp}.${expires}`; //recreating the value from which the original hash was created
+    const isValid = otpService.verifyOtp(data, hashedOtp); //valideting the otp.
     if (!isValid) {
-      res.status(400).json({ error: "Otp is not valid" });
-      return;
+      return res.status(400).json({ error: "Otp is not valid" });
     }
     //as all is valid, now time create a new user
-
     let user;
-
     try {
-      user = await userService.findUser({ phone: phone });
+      user = await userService.findUser({ phone: phone }); //trying to find if the user is already in the db.
       if (!user) {
-        user = await userService.createUser({ phone: phone });
+        user = await userService.createUser({ phone: phone }); //if it's a new user then only create new user in db.
       }
     } catch (error) {
-      console.log(error);
-      res.status(400).json({ error: error });
-      return;
+      // console.log(error);
+      return res.status(400).json({ error: error });
     }
 
     //token
@@ -78,10 +73,11 @@ class AuthController {
     Refresh tokens, which are lasting, opaque strings stored in the application database and used to acquire new access tokens when they expire
 */
     res.cookie("refreshToken", refreshToken, {
+      //sending the refresh token inside a cookie.
       maxAge: 1000 * 60 * 60 * 24 * 30,
       httpOnly: true, //only the server will be able to read ,
     });
-    res.json({ accessToken: accessToken });
+    return res.json({ accessToken: accessToken }); // sending the access token as responce, to store in the local storage latter on.
   }
 }
 
