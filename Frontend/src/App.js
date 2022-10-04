@@ -11,12 +11,18 @@ import Navigation from "./Components/SharedComponents/Navigation/Navigation";
 import Authenticate from "./Pages/Authenticate/Authenticate";
 import Activate from "./Pages/Activate/Activate";
 import Rooms from "./Pages/Rooms/Rooms";
+import { useStateValue } from "./GlobalState/context";
 
-const isAuth = false; //we will get this from out state provider;
-const user = {
+let isAuth = false; //we will get this from out state provider;
+let user = {
   isActivate: false,
 }; //we will get this from out state provider;
 function App() {
+  const [obj, dispatch] = useStateValue();
+  isAuth = obj.isAuth;
+  user = obj.user;
+  console.log(isAuth, user);
+
   return (
     <Router>
       <ParticlesBackground />

@@ -1,10 +1,15 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-
+import { initialState, reducer } from "./GlobalState/initialState";
+import { StateProvider } from "./GlobalState/context";
 import App from "./App";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
-root.render(<App />);
+root.render(
+  <StateProvider initialState={initialState} reducer={reducer}>
+    <App />
+  </StateProvider>
+);
 
 // If you want to start measuring performance in your app, pass a function
 

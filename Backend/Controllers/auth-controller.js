@@ -4,6 +4,7 @@ const { userService } = require("../Services/user-service"); //service to create
 const { tokenService } = require("../Services/token-service"); //to generate JWT token to provide access.
 class AuthController {
   async sendOtp(req, res) {
+    // console.log(req.body);
     const { phone } = req.body; //getting the phone number where we have to send the otp
 
     if (!phone) {
@@ -17,9 +18,10 @@ class AuthController {
     const hashOtp = hashService.hashOtp(data); // creating a hash of the data.
 
     try {
-      await otpService.sendBySms(phone, otp); //now sending the otp in the given number.
-      return res.json({
+      // await otpService.sendBySms(phone, otp); //now sending the otp in the given number.
+      res.json({
         hash: `${hashOtp}.${expires}`,
+        otp: otp,
         phone: phone,
       });
     } catch (error) {
@@ -77,8 +79,8 @@ class AuthController {
       maxAge: 1000 * 60 * 60 * 24 * 30,
       httpOnly: true, //only the server will be able to read ,
     });
-    return res.json({ accessToken: accessToken }); // sending the access token as responce, to store in the local storage latter on.
+    return res.json({ accessToken: accessToken, user }); // sending the access token as responce, to store in the local storage latter on.
   }
 }
-
-module.exports = { authController: new AuthController() };
+const authController = new AuthController();
+module.exports = { authController: authController };
