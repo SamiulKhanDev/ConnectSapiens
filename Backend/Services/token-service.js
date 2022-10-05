@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const refreshToken = require("../Models/refresh-model");
 class TokenService {
   //token service takes care of creating tokens using json web tokens.
   generateTokens(payload) {
@@ -19,6 +20,17 @@ class TokenService {
     //IMPORTANT- you need two diff SECRETS , one for access token, other for refresh token.
 
     return { accessToken, refreshToken };
+  }
+
+  async storeRefreshToken(token, userId) {
+    try {
+      await refreshToken.create({
+        token: token,
+        userId: userId,
+      });
+    } catch (error) {
+      return res.status(400).json({ error });
+    }
   }
 }
 module.exports = { tokenService: new TokenService() };

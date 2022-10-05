@@ -6,6 +6,7 @@ const bodyParser = require("body-parser"); //required for express to understand 
 const app = express();
 const corsObj = {
   origin: ["http://localhost:3000"],
+  credentials: true, //for enable cookies
 };
 app.use(cors(corsObj));
 app.use(bodyParser.urlencoded({ extended: false })); // parse application/x-www-form-urlencoded

@@ -14,7 +14,7 @@ class AuthController {
 
     const ttl = 1000 * 60 * 2; //this otp will be valid only for 2 min; time to live .
     const expires = Date.now() + ttl; //calculating the expiry time by adding "ttl" with the current time.
-    const data = `${phone}.${otp}.${expires}`; //expires field is required to see if the otp is still time valid or not.
+    const data = `${phone}.${otp}.${expires}`; //expires field is required to see if the otp is still time valid or not,and also it will make sure no one can manupulate the time field.[part 5 18:13min]
     const hashOtp = hashService.hashOtp(data); // creating a hash of the data.
 
     try {
@@ -66,7 +66,7 @@ class AuthController {
       activated: false,
     });
     /*
-    now we will store the accesstoken in local storage, and the refreshToken we will store in cookie
+    now we will store the accesstoken  and the refreshToken in cookie
     cookie = A cookie is a piece of data from a website that is stored within a web browser that the website can retrieve at a later time.
     frontend js will not be able to read cookie
     localstorage vs cookies = Cookies are intended to be read by the server, whereas localStorage can only be read by the browser. Thus, cookies are restricted to small data volumes, while localStorage can store more data.
@@ -74,12 +74,18 @@ class AuthController {
     Access tokens, which are short-lived JWT tokens signed by the server and included in every HTTP request that a browser makes to a web server, in order to authorize the request
     Refresh tokens, which are lasting, opaque strings stored in the application database and used to acquire new access tokens when they expire
 */
+    await tokenService.storeRefreshToken(refreshToken, user);
     res.cookie("refreshToken", refreshToken, {
       //sending the refresh token inside a cookie.
       maxAge: 1000 * 60 * 60 * 24 * 30,
       httpOnly: true, //only the server will be able to read ,
     });
-    return res.json({ accessToken: accessToken, user }); // sending the access token as responce, to store in the local storage latter on.
+    res.cookie("accessToken", accessToken, {
+      //sending the refresh token inside a cookie.
+      maxAge: 1000 * 60 * 60 * 24 * 30,
+      httpOnly: true, //only the server will be able to read ,
+    });
+    return res.json({ user, auth: true }); // sending the access token as responce, to store in the local storage latter on.
   }
 }
 const authController = new AuthController();
