@@ -1,5 +1,8 @@
 require("dotenv").config(); //to config dotenv,only in main entry point
 require("./database").db(); //connecting with mongodb database
+const path = require("path");
+const cookieParser = require("cookie-parser");
+
 const cors = require("cors");
 const express = require("express");
 const bodyParser = require("body-parser"); //required for express to understand json req body
@@ -8,9 +11,12 @@ const corsObj = {
   origin: ["http://localhost:3000"],
   credentials: true, //for enable cookies
 };
+
 app.use(cors(corsObj));
+app.use("/storage", express.static(path.join(__dirname, "storage")));
+app.use(cookieParser());
 app.use(bodyParser.urlencoded({ extended: false })); // parse application/x-www-form-urlencoded
-app.use(bodyParser.json()); // parse application/json
+app.use(bodyParser.json({ limit: "8mb" })); // parse application/json , files that are 8mb or less will be able to send.
 const port = process.env.PORT || 3001;
 app.use("/", require("./routes")); //all the routes are maitained in diffrenet folder
 

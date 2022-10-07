@@ -21,11 +21,13 @@ function App() {
   const [obj, dispatch] = useStateValue();
   isAuth = obj.isAuth;
   user = obj.user;
-  console.log(isAuth, user);
+
+  console.log(isAuth);
+  console.log(user);
 
   return (
     <Router>
-      <ParticlesBackground />
+      {/* <ParticlesBackground /> */}
       <Navigation />
       <Switch>
         {/* GuestRoute is a component that will provide routing for its children
@@ -99,7 +101,7 @@ const SemiProtectedRoute = ({ children, ...props }) => {
               state: { from: location },
             }}
           />
-        ) : isAuth && !user.isActivate ? (
+        ) : isAuth && !user.activated ? (
           children
         ) : (
           <Redirect
@@ -130,7 +132,7 @@ const ProtectedRoute = ({ children, ...props }) => {
               state: { from: location },
             }}
           />
-        ) : isAuth && !user.isActivate ? (
+        ) : isAuth && !user.activated ? (
           <Redirect
             to={{
               pathname: "/activate",

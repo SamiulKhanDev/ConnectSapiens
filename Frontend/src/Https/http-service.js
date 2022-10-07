@@ -15,5 +15,7 @@ export const sendOtp = (data) => {
 export const verifyOtp = (data) => {
   return api.post("/api/verify-otp", data);
 };
-
+export const activate = (data) => {
+  return api.post("/api/activate", data);
+};
 export default api;

@@ -62,7 +62,7 @@ class AuthController {
     //token
 
     const { accessToken, refreshToken } = tokenService.generateTokens({
-      _id: user._id,
+      _id: user._id, //now when we will verify access token using jwt.verify if all matches the playload object will be returned.
       activated: false,
     });
     /*

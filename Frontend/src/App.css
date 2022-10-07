@@ -2,6 +2,7 @@
 html {
     box-sizing: border-box;
     font-size: 16px;
+
 }
 
 body,
@@ -37,7 +38,8 @@ body {
     background: #121212;
     /* background: transparent; */
     font-family: 'Nunito', sans-serif;
-    color: #fff;
+    color: #fff;    
+
 }
 
 .container {

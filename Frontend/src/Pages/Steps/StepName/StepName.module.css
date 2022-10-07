@@ -2,6 +2,10 @@
     composes: cardWrapper from '../StepPhoneEmail/StepPhoneEmail.module.css';
 }
 
+.bottomParagraph {
+    composes: bottomParagraph from '../StepPhoneEmail/StepPhoneEmail.module.css';
+}
+
 .actionButtonWrap {
     composes: actionButtonWrap from '../StepPhoneEmail/StepPhoneEmail.module.css';
 }

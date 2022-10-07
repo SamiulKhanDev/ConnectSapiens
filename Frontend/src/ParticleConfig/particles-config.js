@@ -22,7 +22,7 @@ export const config = {
   },
   fullScreen: {
     enable: true,
-    zIndex: -1,
+    zIndex: -10,
   },
   detectRetina: true,
   duration: 0,
