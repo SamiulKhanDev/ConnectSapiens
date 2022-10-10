@@ -26,6 +26,7 @@ const Phone = ({ onClick }) => {
       <TextInput
         value={phoneNumber}
         onChange={(e) => setPhoneNumber(e.target.value)}
+        onWheel={(e) => e.target.blur()}
         type="number"
         placeholder="Enter your phone number"
       />

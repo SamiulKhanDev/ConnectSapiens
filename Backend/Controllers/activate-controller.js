@@ -9,9 +9,8 @@ class ActivateController {
     }
     // console.log(req.body);
     // we have to convert base64 to node buffer. But we dont need the front part.
-
     const buffer = Buffer.from(
-      avatar.replace(/^data:image\/png;base64,/, ""),
+      avatar.replace(/^data:image\/(png|jpeg|jpg);base64,/, ""),
       "base64"
     ); //will conver the base64 to buffer
     //now we don't have store large files, will use "jimp" package to compress the photo.
@@ -24,6 +23,7 @@ class ActivateController {
         .resize(150, jimp.AUTO)
         .write(path.resolve(__dirname, `../storage/${imagePath}`)); //[with in px, height auto so image dose nor streach],will store the image to the path;
     } catch (error) {
+      console.log(error);
       return res.status(500).json({ error });
     }
 
@@ -39,6 +39,7 @@ class ActivateController {
       user.save();
       res.json({ user, auth: true });
     } catch (error) {
+      console.log(error);
       return res.status(500).json({ error });
     }
   }

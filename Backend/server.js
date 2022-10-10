@@ -14,7 +14,7 @@ const corsObj = {
 
 app.use(cors(corsObj));
 app.use("/storage", express.static(path.join(__dirname, "storage")));
-app.use(cookieParser());
+app.use(cookieParser()); //to parse cookies.
 app.use(bodyParser.urlencoded({ extended: false })); // parse application/x-www-form-urlencoded
 app.use(bodyParser.json({ limit: "8mb" })); // parse application/json , files that are 8mb or less will be able to send.
 const port = process.env.PORT || 3001;

@@ -87,6 +87,61 @@ class AuthController {
     });
     return res.json({ user, auth: true }); // sending the access token as responce, to store in the local storage latter on.
   }
+
+  async refresh(req, res) {
+    //get the token from cookies.
+    let { refreshTokenCookie } = req.cookies;
+    let userDetails;
+    try {
+      //verify the token.
+      userDetails = await tokenService.verifyRefreshToken(refreshTokenCookie);
+    } catch (error) {
+      return res.status(401).json({ error: " invalid token" });
+    }
+    //check if the token is inside db.
+    try {
+      const token = await tokenService.findRefreshToken(
+        userDetails._id,
+        refreshTokenCookie
+      );
+      if (!token) {
+        return res.status(401).json({ error: " invalid token" });
+      }
+    } catch (error) {
+      return res.status(500).json({ error });
+    }
+
+    // check if valid user
+    const user = await userService.findUser(userDetails._id);
+    if (!user) {
+      return res.status(404).json({ error: " No user" });
+    }
+
+    const { accessToken, refreshToken } = tokenService.generateTokens({
+      _id: user._id,
+      activated: false,
+    });
+
+    //update refresh token.
+
+    try {
+      await tokenService.updateRefreshToken(userDetails._id, refreshToken);
+    } catch (error) {
+      return res.status(500).json({ error });
+    }
+    //put in cookie
+    res.cookie("refreshToken", refreshToken, {
+      //sending the refresh token inside a cookie.
+      maxAge: 1000 * 60 * 60 * 24 * 30,
+      httpOnly: true, //only the server will be able to read ,
+    });
+    res.cookie("accessToken", accessToken, {
+      //sending the refresh token inside a cookie.
+      maxAge: 1000 * 60 * 60 * 24 * 30,
+      httpOnly: true, //only the server will be able to read ,
+    });
+    return res.json({ user, auth: true });
+  }
 }
 const authController = new AuthController();
 module.exports = { authController: authController };

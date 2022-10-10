@@ -25,6 +25,7 @@ const StepOtp = ({ onClick }) => {
             onChange={(e) => {
               setOtp(e.target.value);
             }}
+            onWheel={(e) => e.target.blur()}
             type="number"
           />
           <div className={styles.actionButtonWrap}>

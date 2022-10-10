@@ -74,7 +74,7 @@ const StepAvatar = ({ onClick }) => {
           </label>
         </div>
         <div className={styles.actionButtonWrap}>
-          <Button onClick={submit} text={"Next"} />
+          <Button onClick={submit} text={"Double Click To Continue"} />
         </div>
       </Card>
     </div>
