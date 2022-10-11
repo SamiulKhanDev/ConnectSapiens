@@ -18,7 +18,7 @@ class ActivateController {
     // 32478362874-3242342342343432.png
 
     try {
-      const jimpRes = await jimp.read(buffer);
+      const jimpRes = await jimp.read(buffer); //compressing the given photo.
       jimpRes
         .resize(150, jimp.AUTO)
         .write(path.resolve(__dirname, `../storage/${imagePath}`)); //[with in px, height auto so image dose nor streach],will store the image to the path;
@@ -35,7 +35,7 @@ class ActivateController {
       }
       user.activated = true;
       user.name = name;
-      user.avatar = `/storage/${imagePath}`;
+      user.avatar = `${process.env.BASE_URL}/storage/${imagePath}`;
       user.save();
       res.json({ user, auth: true });
     } catch (error) {

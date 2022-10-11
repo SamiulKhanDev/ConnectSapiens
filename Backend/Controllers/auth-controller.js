@@ -85,7 +85,7 @@ class AuthController {
       maxAge: 1000 * 60 * 60 * 24 * 30,
       httpOnly: true, //only the server will be able to read ,
     });
-    return res.json({ user, auth: true }); // sending the access token as responce, to store in the local storage latter on.
+    return res.json({ user, auth: true }); // sending the user as responce.
   }
 
   async refresh(req, res) {
