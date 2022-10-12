@@ -12,20 +12,26 @@ import Authenticate from "./Pages/Authenticate/Authenticate";
 import Activate from "./Pages/Activate/Activate";
 import Rooms from "./Pages/Rooms/Rooms";
 import { useStateValue } from "./GlobalState/context";
+import { useLoadingWithRefresh } from "./Hooks/useLoadingWithRefresh";
 
 let isAuth = false; //we will get this from out state provider;
 let user = {
   isActivate: false,
 }; //we will get this from out state provider;
 function App() {
+  const { loading } = useLoadingWithRefresh();
+
   const [obj, dispatch] = useStateValue();
   isAuth = obj.isAuth;
   user = obj.user;
 
-  console.log(isAuth);
-  console.log(user);
+  // console.log(isAuth);
+  // console.log(user);
+  console.log(loading);
 
-  return (
+  return loading ? (
+    "loading..."
+  ) : (
     <Router>
       {/* <ParticlesBackground /> */}
       <Navigation />

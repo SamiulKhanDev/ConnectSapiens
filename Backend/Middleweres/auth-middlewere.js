@@ -5,6 +5,7 @@ const validateAccesstoken = async (req, res, next) => {
   //to get the access token from the cookie we need to install a package called cookie-parser. Set the cookie-parser in server.js
   try {
     const { accessToken } = req.cookies; //cookie-parser is needed to do this.
+    // console.log(accessToken + " access");
     // console.log("inside validateAccesstoken");
     if (!accessToken) {
       throw new Error();

@@ -30,6 +30,8 @@ class AuthController {
   }
 
   async verifyOtp(req, res) {
+    // const { refreshToken: refreshTokenCookie } = req.cookies;
+    // console.log(refreshTokenCookie);
     const { phone, hash, otp } = req.body; //we need all this three fields to regenaate the hash,and compare with the exsisting hashcode
     if (!phone || !hash || !otp) {
       return res.status(400).json({ error: "please provide all the values" }); //if any one of them is missing.
@@ -74,7 +76,7 @@ class AuthController {
     Access tokens, which are short-lived JWT tokens signed by the server and included in every HTTP request that a browser makes to a web server, in order to authorize the request
     Refresh tokens, which are lasting, opaque strings stored in the application database and used to acquire new access tokens when they expire
 */
-    await tokenService.storeRefreshToken(refreshToken, user);
+    await tokenService.storeRefreshToken(refreshToken, user._id);
     res.cookie("refreshToken", refreshToken, {
       //sending the refresh token inside a cookie.
       maxAge: 1000 * 60 * 60 * 24 * 30,
@@ -90,31 +92,34 @@ class AuthController {
 
   async refresh(req, res) {
     //get the token from cookies.
-    let { refreshTokenCookie } = req.cookies;
+    const { refreshToken: refreshTokenCookie } = req.cookies;
+    // console.log(refreshTokenCookie);
+    // console.log(req);
     let userDetails;
     try {
       //verify the token.
       userDetails = await tokenService.verifyRefreshToken(refreshTokenCookie);
     } catch (error) {
-      return res.status(401).json({ error: " invalid token" });
+      return res.status(401).json({ error: " invalid token 101" });
     }
     //check if the token is inside db.
+    console.log(userDetails);
     try {
       const token = await tokenService.findRefreshToken(
         userDetails._id,
         refreshTokenCookie
       );
       if (!token) {
-        return res.status(401).json({ error: " invalid token" });
+        return res.status(401).json({ error: " invalid token 111" });
       }
     } catch (error) {
-      return res.status(500).json({ error });
+      return res.status(500).json({ error: " line 116" });
     }
 
     // check if valid user
-    const user = await userService.findUser(userDetails._id);
+    const user = await userService.findUser({ _id: userDetails._id });
     if (!user) {
-      return res.status(404).json({ error: " No user" });
+      return res.status(404).json({ error: " No user 122" });
     }
 
     const { accessToken, refreshToken } = tokenService.generateTokens({
@@ -127,7 +132,7 @@ class AuthController {
     try {
       await tokenService.updateRefreshToken(userDetails._id, refreshToken);
     } catch (error) {
-      return res.status(500).json({ error });
+      return res.status(500).json({ error: " line 135" });
     }
     //put in cookie
     res.cookie("refreshToken", refreshToken, {
