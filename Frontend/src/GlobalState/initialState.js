@@ -13,6 +13,7 @@ export const actionTypes = {
   SET_USER_NAME: "SET_USER_NAME",
   SET_AVATAR: "SET_AVATAR",
   SET_AUTH: "SET_AUTH",
+  SET_AUTH_USER:"SET_AUTH_USER"
 };
 export const reducer = (state, action) => {
   switch (action.type) {
@@ -43,6 +44,12 @@ export const reducer = (state, action) => {
         ...state,
         isAuth: action.isAuth,
       };
+    case actionTypes.SET_AUTH_USER:
+      return {
+        ...state,
+        isAuth: action.isAuth,
+        user:action.user
+      }
     default:
       return state;
   }

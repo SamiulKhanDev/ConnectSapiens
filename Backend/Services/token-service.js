@@ -35,11 +35,11 @@ class TokenService {
     });
   }
   async verifyRefreshToken(refreshToken) {
-    console.log(refreshToken, " 38 verify");
+    // console.log(refreshToken, " 38 verify");
     return jwt.verify(refreshToken, refreshTokenSecret);
   }
   async findRefreshToken(userId, refreshToken) {
-    console.log(userId, refreshToken);
+    // console.log(userId, refreshToken);
     return await refreshTokenModel.findOne({
       userId: userId,
       token: refreshToken,
@@ -50,6 +50,10 @@ class TokenService {
       { userId },
       { token: refreshToken }
     );
+  }
+
+  async removeToken(refreshToken) {
+    await refreshTokenModel.deleteOne({ token: refreshToken });
   }
 }
 const tokenService = new TokenService();

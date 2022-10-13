@@ -13,6 +13,7 @@ import Activate from "./Pages/Activate/Activate";
 import Rooms from "./Pages/Rooms/Rooms";
 import { useStateValue } from "./GlobalState/context";
 import { useLoadingWithRefresh } from "./Hooks/useLoadingWithRefresh";
+import Loader from "./Components/SharedComponents/Loader/Loader";
 
 let isAuth = false; //we will get this from out state provider;
 let user = {
@@ -25,12 +26,12 @@ function App() {
   isAuth = obj.isAuth;
   user = obj.user;
 
-  // console.log(isAuth);
-  // console.log(user);
+  console.log(isAuth);
+  console.log(user);
   console.log(loading);
 
   return loading ? (
-    "loading..."
+    <Loader message={"Loading, Please wait..."} />
   ) : (
     <Router>
       {/* <ParticlesBackground /> */}
@@ -107,7 +108,7 @@ const SemiProtectedRoute = ({ children, ...props }) => {
               state: { from: location },
             }}
           />
-        ) : isAuth && !user.activated ? (
+        ) : isAuth && !user?.activated ? (
           children
         ) : (
           <Redirect
@@ -138,7 +139,7 @@ const ProtectedRoute = ({ children, ...props }) => {
               state: { from: location },
             }}
           />
-        ) : isAuth && !user.activated ? (
+        ) : isAuth && !user?.activated ? (
           <Redirect
             to={{
               pathname: "/activate",

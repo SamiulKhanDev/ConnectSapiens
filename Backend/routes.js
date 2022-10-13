@@ -18,4 +18,5 @@ router.post("/api/activate", validateAccesstoken, activateController.activate); 
 //validateAccesstoken is a middlewere.
 
 router.get("/api/refresh", authController.refresh);
+router.post("/api/logout", validateAccesstoken, authController.logout);
 module.exports = router;

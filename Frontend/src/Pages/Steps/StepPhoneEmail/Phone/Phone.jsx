@@ -11,6 +11,7 @@ const Phone = ({ onClick }) => {
   const [{}, dispatch] = useStateValue();
 
   async function submit() {
+    if (!phoneNumber) return;
     const { data } = await sendOtp({ phone: phoneNumber });
     console.log(data);
     dispatch({

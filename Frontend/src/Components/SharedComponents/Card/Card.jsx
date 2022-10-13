@@ -1,16 +1,16 @@
-import React from 'react'
-import styles from './Card.module.css';
+import React from "react";
+import styles from "./Card.module.css";
 
-const Card = ({ title,icon,children}) => {
+const Card = ({ title, icon, children }) => {
   return (
     <div className={styles.card}>
-    <div className={styles.headingWrapper}>
-              <img src={ icon} alt="Logo" />
-              <h1 className={styles.heading}>{ title}</h1>
-          </div>
-          {children}
-  </div>
-  )
-}
+      <div className={styles.headingWrapper}>
+        {icon && <img src={icon} alt="Logo" />}
+        {title && <h1 className={styles.heading}>{title}</h1>}
+      </div>
+      {children}
+    </div>
+  );
+};
 
-export default Card
+export default Card;

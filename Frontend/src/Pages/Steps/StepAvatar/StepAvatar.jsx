@@ -4,57 +4,50 @@ import Button from "../../../Components/SharedComponents/Button/Button";
 import Card from "../../../Components/SharedComponents/Card/Card";
 import { activate } from "../../../Https/http-service";
 import { useStateValue } from "../../../GlobalState/context";
+import Loader from "../../../Components/SharedComponents/Loader/Loader";
 const StepAvatar = ({ onClick }) => {
   const [{ name, avatar }, dispatch] = useStateValue();
+  const [loading, setLoading] = useState(false);
 
-  const [image, setImage] = useState(
-    avatar ? avatar : "/images/monkey-avatar.png"
-  );
-  const handleChange = (e) => {
-    // console.log(e.target.files[0]);
-    const file = e.target.files[0]; //this image is in file format, we have convert if in base64 format using FileReader api(provided by browser);
-
-    const converToBase64 = (file) => {
-      return new Promise((resolve, reject) => {
-        const fr = new FileReader();
-        fr.readAsDataURL(file);
-        fr.onloadend = () => resolve(fr.result);
-        fr.onerror = (error) => reject(error);
+  const [image, setImage] = useState("/images/monkey-avatar.png");
+  function captureImage(e) {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onloadend = function () {
+      setImage(reader.result);
+      dispatch({
+        type: "SET_AVATAR",
+        avatar: reader.result,
       });
     };
-    converToBase64(file)
-      .then((res) => {
-        setImage(res);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
-
+  }
   const submit = async () => {
-    dispatch({
-      type: "SET_AVATAR",
-      avatar: image,
-    });
+    if (!avatar || !name) {
+      return;
+    }
+    setLoading(true);
     // console.log(avatar);
     try {
       const { data } = await activate({ name, avatar });
       if (data.auth) {
         dispatch({
-          type: "SET_USER",
-          user: data.user,
-        });
-        dispatch({
-          type: "SET_Auth",
+          type: "SET_AUTH_USER",
           isAuth: data.auth,
+          user: data.user,
         });
       }
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);
     }
     // onClick();
   };
 
+  if (loading) {
+    return <Loader message={"Loading,Please wait..."} />;
+  }
   return (
     <div className={styles.cardWrapper}>
       <Card title={`Hi! ${name}`} icon={"/images/monkey-emoji.png"}>
@@ -64,7 +57,7 @@ const StepAvatar = ({ onClick }) => {
         </div>
         <div>
           <input
-            onChange={handleChange}
+            onChange={captureImage}
             type="file"
             id="avatarInput"
             className={styles.avatarInput}

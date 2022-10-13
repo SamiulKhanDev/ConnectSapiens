@@ -147,6 +147,16 @@ class AuthController {
     });
     return res.json({ user, auth: true });
   }
+
+  async logout(req, res) {
+    const { refreshToken } = req.cookies;
+
+    await tokenService.removeToken(refreshToken);
+
+    res.clearCookie("refreshToken");
+    res.clearCookie("accessToken");
+    res.json({ user: null, auth: false });
+  }
 }
 const authController = new AuthController();
 module.exports = { authController: authController };
