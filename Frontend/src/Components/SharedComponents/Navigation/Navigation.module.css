@@ -6,3 +6,23 @@
     justify-content: space-between;
     
 }
+.navRight
+{
+    display: flex;
+    align-items: center;
+}
+.logoutButton
+{
+    border: none;
+    outline: none;
+    cursor: pointer;
+    background: none;
+}
+
+.avatar{
+    border: 3px solid #0077ff;
+    border-radius: 50%;
+    object-fit: cover;
+    margin: 0 20px;
+    margin-right: 10px;
+}

@@ -5,7 +5,7 @@ import { logout } from "../../../Https/http-service";
 import { useStateValue } from "../../../GlobalState/context";
 
 const Navigation = () => {
-  const [{ isAuth }, dispatch] = useStateValue();
+  const [{ isAuth, user }, dispatch] = useStateValue();
   const brandStyle = {
     color: "#fff",
     textDecoration: "none",
@@ -37,7 +37,23 @@ const Navigation = () => {
         <img src="/images/Emoji-1.png" alt="Hand Logo" />
         <span style={logoText}>ConnectSepiens</span>
       </Link>
-      {isAuth && <button onClick={logOutUser}>Logout</button>}
+      {isAuth && (
+        <div className={styles.navRight}>
+          <h3>{user.name}</h3>
+          <Link to="/">
+            <img
+              className={styles.avatar}
+              src={user.avatar}
+              width="40"
+              heoght="40"
+              alt="avatar"
+            />
+          </Link>
+          <button className={styles.logoutButton} onClick={logOutUser}>
+            <img src="/images/logout.png" alt="logout-icon" />
+          </button>
+        </div>
+      )}
     </nav>
   );
 };
