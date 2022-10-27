@@ -14,6 +14,7 @@ import Rooms from "./Pages/Rooms/Rooms";
 import { useStateValue } from "./GlobalState/context";
 import { useLoadingWithRefresh } from "./Hooks/useLoadingWithRefresh";
 import Loader from "./Components/SharedComponents/Loader/Loader";
+import Room from "./Pages/Room/Room";
 
 let isAuth = false; //we will get this from out state provider;
 let user = {
@@ -57,6 +58,9 @@ function App() {
         protedted routes basically moves them to rooms */}
         <ProtectedRoute path="/rooms">
           <Rooms />
+        </ProtectedRoute>
+        <ProtectedRoute path="/room/:id">
+          <Room />
         </ProtectedRoute>
       </Switch>
     </Router>

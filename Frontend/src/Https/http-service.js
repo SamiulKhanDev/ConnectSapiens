@@ -21,6 +21,12 @@ export const activate = (data) => {
 export const logout = () => {
   return api.post("/api/logout");
 };
+export const createRoom = (data) => {
+  return api.post("/api/rooms", data);
+};
+export const getAllRooms = () => {
+  return api.get("/api/rooms");
+};
 
 //we will use an INTERCEPTOR to check if the res it 401, then we have to refresh the access token.
 //axios provides interceptors to modify values of req or res object.

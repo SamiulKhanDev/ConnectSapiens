@@ -2,6 +2,8 @@ const router = require("express").Router();
 const { authController } = require("./Controllers/auth-controller");
 const { activateController } = require("./Controllers/activate-controller");
 const { validateAccesstoken } = require("./Middleweres/auth-middlewere");
+const roomsController = require("./Controllers/room-controller");
+// const roomController = require("./Controllers/room-controller");
 
 router.get("/", (req, res) => {
   res.send("hello world");
@@ -19,4 +21,6 @@ router.post("/api/activate", validateAccesstoken, activateController.activate); 
 
 router.get("/api/refresh", authController.refresh);
 router.post("/api/logout", validateAccesstoken, authController.logout);
+router.post("/api/rooms", validateAccesstoken, roomsController.create);
+router.get("/api/rooms", validateAccesstoken, roomsController.index);
 module.exports = router;
