@@ -80,7 +80,7 @@ const Rooms = () => {
   useEffect(() => {
     const fetchRooms = async () => {
       const { data } = await getAllRooms();
-      console.log(data);
+      // console.log(data);
       setRooms(data);
     };
     fetchRooms();
@@ -110,7 +110,7 @@ const Rooms = () => {
       </div>
       <div className={styles.roomList}>
         {rooms.map((room) => (
-          <RoomsCard key={room.id} room={room} />
+          <RoomsCard key={room._id} room={room} />
         ))}
       </div>
       {showModel && <AddRoomModel onClose={() => setShowModel(false)} />}
