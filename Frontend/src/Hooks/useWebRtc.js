@@ -63,5 +63,19 @@ export const useWebRtc = (roomId, user) => {
     });
   }, []);
 
+  useEffect(() => {
+    const handleNewPeer = async ({ peerId,createOffer,user}) => {
+      if (peerId in connections.current)
+      {
+        return alert("already connected");
+      }
+      
+
+      
+    }
+
+    socket.current.emit(ACTIONS.ADD_PEER,handleNewPeer);
+  }, []);
+
   return { clients, provideRef };
 };

@@ -29,20 +29,28 @@ const port = process.env.PORT || 5050;
 app.use("/", require("./routes")); //all the routes are maitained in diffrenet folder
 const socketUserMapping = {};
 io.on("connection", (socket) => {
-  console.log(` new connection ${socket.id}`);
+  // console.log(` new connection ${socket.id}`);
   socket.on(ACTIONS.JOIN, ({ roomId, user }) => {
     socketUserMapping[socket.id] = user;
 
-    const clientsOnSameRoom = Arrays.from(
+    const clientsOnSameRoom = Array.from(
+      //map to array conversion
       io.sockets.adapter.rooms.get(roomId) || []
     );
 
     clientsOnSameRoom.forEach((clientId) => {
-      io.to(clientId).emit(ACTIONS.ADD_PEER, {});
+      io.to(clientId).emit(ACTIONS.ADD_PEER, {
+        peerId: socket.id,
+        createOffer: false,
+        user,
+      });
+      socket.emit(ACTIONS.ADD_PEER, {
+        peerId: clientId,
+        createOffer: false,
+        user: socketUserMapping[clientId],
+      });
+      socket.join(roomId);
     });
-
-    socket.emit(ACTIONS.ADD_PEER, {});
-    socket.join(roomId);
   });
 });
 
