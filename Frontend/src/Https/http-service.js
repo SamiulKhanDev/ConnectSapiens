@@ -55,6 +55,7 @@ api.interceptors.response.use(
 
         return api.request(originalRequest);
       } catch (err) {
+        console.log("i am here");
         console.log(err.message);
       }
     }
@@ -67,7 +68,6 @@ export default api;
 
 /**
  * Interceptors: Interceptors have access to response/request before and after the route handler is called.
- *
  * Middlewere:Middleware is called only before the route handler is called. You have access to the response object,
  *  but you don't have the result of the route handler. They are basically express middleware functions.
  */

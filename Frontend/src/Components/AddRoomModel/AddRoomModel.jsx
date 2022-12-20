@@ -11,9 +11,7 @@ const AddRoomModel = ({ onClose }) => {
   const createRoom = async () => {
     if (!topic) return;
     try {
-      console.log(topic, roomType);
       const { data } = await create({ topic, roomType });
-      console.log(data, "data");
       history.push(`/room/${data._id}`);
     } catch (error) {}
   };

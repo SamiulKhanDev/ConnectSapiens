@@ -6,7 +6,7 @@ import { useStateValue } from "../../GlobalState/context";
 const Room = () => {
   const [{ user }, dispatch] = useStateValue();
   const { id: roomId } = useParams();
-  console.log(roomId);
+
   const { clients, provideRef } = useWebRtc(roomId, user);
   return (
     <div>

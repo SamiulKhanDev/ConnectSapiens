@@ -12,7 +12,6 @@ const validateAccesstoken = async (req, res, next) => {
       // console.log("access token missing");
     }
     const userData = await tokenService.verifyAccessToken(accessToken);
-    // console.log(userData);
     if (!userData) {
       throw new Error();
     }

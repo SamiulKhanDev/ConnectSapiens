@@ -11,7 +11,7 @@ class TokenService {
     //   " acc secret insode generate otp"
     // );
     const accessToken = jwt.sign(payload, accessTokenSecret, {
-      expiresIn: "1m",
+      expiresIn: "24h",
     });
     //creating access token that will last for 1h.
     const refreshToken = jwt.sign(payload, refreshTokenSecret, {
