@@ -20,6 +20,20 @@ class RoomsController {
     // console.log(rooms);
     return res.status(200).json(rooms);
   }
+
+  async getRoom(req, res) {
+    const { roomId } = req.body;
+
+    const data = await roomService.getSingleRoom(roomId);
+    return res.status(200).json(data);
+    // console.log(roomId + " i am here");
+  }
+
+  async getRoomsByName(req, res) {
+    const { searchRoom } = req.body;
+    const data = await roomService.getRoomsByName(searchRoom);
+    return res.status(200).json(data);
+  }
 }
 
 module.exports = new RoomsController();

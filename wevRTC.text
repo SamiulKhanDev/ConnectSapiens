@@ -1,0 +1,47 @@
+webRTC = web REAL TIME COMMUNICATION
+
+client to client connection without any intermidiate server
+
+stpes----
+Let's say i want to connect two browsers together, b1 b2
+
+in the b1 
+1) const peerConnection = new RTCPeerConnection(); 
+2)const dc = peerConnection.createDataChannel("channel"); created a dataChannel with the name of "channel"
+3)dc.onopen=()=>{log("datachannel is open")};
+4)dc.onmessage =(e)=>{log(e.data)};
+//we also have to setup icecandidate
+peerConnection.onicecandidate = (e)=>{log(JSON.stringify(peerConnection.localDescription))};when ever i will make any change
+to the peerConnection icecandidate will moniter it and "onicecandidate event will fire,"
+//b1 need to create an offer to whoch b2 will generate an answer
+const offer = await peerConnection.createOffer();
+peerConnection.setLocalDescription(offer); "onicecandidate" event will fire to print the offer
+
+in the b2
+1) const peerConnection = new RTCPeerConnection(); 
+2) const offer = "paste the offer thet were printed in the b1 console"
+3) peerConnection.onicecandidate = (e)=>{log(JSON.stringify(peerConnection.localDescription))}
+4) await peerConnection.setRemoteDescription(offer); 
+5)peerConnection.ondatachannel=(e)=>{
+    dataChannel = e.channel;
+    dataChannel.onopen = ()=>{log("datachannel is open")};
+    dataChannel.onmessage = (e)=>{log(e.data)};
+}
+
+const answer = await peerConnection.createAnswer();
+await peerConnection.setLocalDescription(ans);"onicecandidate" event will fire to print the answer
+
+
+in the b1
+const answer = "paste the copied answer from b2"
+await peerConnection.setRemoteDescription(answer);
+
+
+
+now datachannel is created between the browsers;
+to send the data from respective browsers use the datachannel;
+dataChannel.send("message");
+
+
+now to transfer this offer and answer, we will utilize socket.io.
+It works same as NODE JS event emiter

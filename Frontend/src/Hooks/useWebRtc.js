@@ -3,16 +3,6 @@ import { useStateWithCallback } from "./useStateWithCallback";
 import socketInit from "../Socket/index";
 import { ACTIONS } from "../actions";
 import freeIce from "freeice";
-const users = [
-  //   {
-  //     id: 1,
-  //     name: "samiul khan",
-  //   },
-  //   {
-  //     id: 2,
-  //     name: "john doe",
-  //   },
-];
 export const useWebRtc = (roomId, user) => {
   const [clients, setClients] = useStateWithCallback([]);
   const audioElements = useRef({}); //to map user to its audio player,to control their audio player output,
@@ -20,14 +10,20 @@ export const useWebRtc = (roomId, user) => {
   const connections = useRef({}); //to store all connected users;
   const localMediaStream = useRef(null);
   const socket = useRef(null);
+  const clientsRef = useRef([]);
+  //-------------------------------------------
   useEffect(() => {
     socket.current = socketInit();
   }, []);
+  //-------------------------------------------
 
+  //-------------------------------------------
   const provideRef = (instance, userId) => {
     audioElements.current[userId] = instance;
   };
+  //-------------------------------------------
 
+  //-------------------------------------------
   const addNewClient = useCallback(
     (newClient, cb) => {
       const lookingFor = clients.find((client) => client._id === newClient._id);
@@ -37,9 +33,11 @@ export const useWebRtc = (roomId, user) => {
     },
     [clients, setClients]
   );
+  //-------------------------------------------
 
   //capture media
 
+  //-------------------------------------------
   useEffect(() => {
     const startCapture = async () => {
       localMediaStream.current = await navigator.mediaDevices.getUserMedia({
@@ -69,7 +67,9 @@ export const useWebRtc = (roomId, user) => {
       socket.current.emit(ACTIONS.LEAVE, { roomId });
     };
   }, []);
+  //-------------------------------------------
 
+  //-------------------------------------------
   useEffect(() => {
     const handleNewPeer = async ({ peerId, createOffer, user: remoteUser }) => {
       if (peerId in connections.current) {
@@ -77,7 +77,7 @@ export const useWebRtc = (roomId, user) => {
       }
 
       connections.current[peerId] = new RTCPeerConnection({
-        iceServers: freeIce(),
+        iceServers: freeIce(), //STUN and TURN servers to maintain the webRTC;
       });
       //hanlde new iceCandidate
       connections.current[peerId].onicecandidate = (event) => {
@@ -125,6 +125,9 @@ export const useWebRtc = (roomId, user) => {
       socket.current.off(ACTIONS.ADD_PEER);
     };
   }, []);
+  //-------------------------------------------
+
+  //-------------------------------------------
   //handle icecandidate
   useEffect(() => {
     socket.current.on(ACTIONS.ICE_CANDIDATE, ({ peerId, icecandidate }) => {
@@ -137,6 +140,9 @@ export const useWebRtc = (roomId, user) => {
       socket.current.off(ACTIONS.ICE_CANDIDATE);
     };
   }, []);
+  //-------------------------------------------
+
+  //-------------------------------------------
   //handle sdp
   useEffect(() => {
     socket.current.on(
@@ -162,6 +168,9 @@ export const useWebRtc = (roomId, user) => {
       socket.current.off(ACTIONS.SESSION_DESCRIPTION);
     };
   }, []);
+  //-------------------------------------------
+
+  //-------------------------------------------
   //handle remove peer
   useEffect(() => {
     socket.current.on(ACTIONS.REMOVE_PEER, async ({ peerId, userId }) => {
@@ -171,15 +180,82 @@ export const useWebRtc = (roomId, user) => {
       delete connections.current[peerId];
       delete audioElements.current[peerId];
       setClients((list) => {
-        list.filter((client) => client._id != userId);
+        return list.filter((client) => client._id != userId);
       });
     });
 
     return () => {
+      for (let peerId in connections.current) {
+        connections.current[peerId].close();
+        delete connections.current[peerId];
+        delete audioElements.current[peerId];
+        // console.log('removing', connections.current);
+      }
       socket.current.off(ACTIONS.REMOVE_PEER);
     };
+    //-------------------------------------------
   }, []);
-  return { clients, provideRef };
+  //------------------------------------------
+  //storing clients to ref
+  useEffect(() => {
+    clientsRef.current = clients;
+  }, [clients]);
+
+  //-------------------------------------------
+  //listen from mute unmute
+
+  useEffect(() => {
+    socket.current.on(ACTIONS.MUTE, ({ peerId, userId }) => {
+      setMute(true, userId);
+    });
+    socket.current.on(ACTIONS.UNMUTE, ({ peerId, userId }) => {
+      setMute(false, userId);
+    });
+
+    const setMute = (isMute, userId) => {
+      const clientIdx = clientsRef.current
+        .map((client) => client._id)
+        .indexOf(userId);
+      const copiedClientsFromRef = JSON.parse(
+        JSON.stringify(clientsRef.current)
+      );
+      if (clientIdx != -1) {
+        copiedClientsFromRef[clientIdx].muted = isMute;
+        setClients(copiedClientsFromRef);
+      }
+    };
+  }, []);
+
+  //-------------------------------------------
+  //handle Mute
+  const handleMute = (isMute, userId) => {
+    console.log(isMute + " isMute");
+    let settled = false;
+    let interval = setInterval(() => {
+      if (localMediaStream.current) {
+        localMediaStream.current.getTracks()[0].enabled = !isMute;
+        if (isMute) {
+          socket.current.emit(ACTIONS.MUTE, {
+            roomId,
+            userId,
+          });
+        } else {
+          socket.current.emit(ACTIONS.UNMUTE, {
+            roomId,
+            userId,
+          });
+        }
+
+        settled = true;
+      }
+      if (settled) {
+        clearInterval(interval);
+      }
+    }, 200);
+  };
+  //-------------------------------------------
+
+  return { clients, provideRef, handleMute };
 };
 
-//IceServers helps to find out public IP of the machine so that it can be shared with other devices
+//IceServers(STUN ,TURN) helps to find out public IP of the machine so that it can be shared with other devices

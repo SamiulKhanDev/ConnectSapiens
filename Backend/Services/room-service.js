@@ -23,6 +23,27 @@ class RoomService {
       // res.json({ message: "Database problem" });
     }
   }
+  async getSingleRoom(roomId) {
+    try {
+      const data = await RoomModel.findOne({ _id: roomId });
+      return data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  async getRoomsByName(roomName) {
+    try {
+      const data = await RoomModel.find({
+        topic: { $regex: roomName, $options: "i" }, //all the rooms that have "roomName"(case Insensitive)in them
+      })
+        .populate("speakers")
+        .populate("ownerId")
+        .exec();
+      return data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
 }
 
 module.exports = new RoomService();

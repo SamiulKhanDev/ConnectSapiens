@@ -23,4 +23,6 @@ router.get("/api/refresh", authController.refresh);
 router.post("/api/logout", validateAccesstoken, authController.logout);
 router.post("/api/rooms", validateAccesstoken, roomsController.create);
 router.get("/api/rooms", validateAccesstoken, roomsController.index);
+router.post("/api/room", validateAccesstoken, roomsController.getRoom);
+router.post("/api/roomsByName", validateAccesstoken, roomsController.getRoomsByName);
 module.exports = router;

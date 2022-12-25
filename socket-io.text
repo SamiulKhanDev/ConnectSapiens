@@ -25,3 +25,10 @@ io.sockets.socket(); //for emiting to specific clients
 io.sockets.emit(); //send to all connected clients (same as socket.emit)
 
 io.sockets.on() ; //initial connection from a client.
+
+
+STUN - >Session Traversal Utilitise for NAT.
+this server basically helps to find the IP ADDRESS of the peer that you want to connect.
+
+TURN -> Traversal Using Relays Around NAT.
+A backup for STUN, when you cannot find the unique ip address using the STUN server,TURN comes into play.

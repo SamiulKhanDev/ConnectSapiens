@@ -26,7 +26,7 @@ app.use(bodyParser.urlencoded({ extended: false })); // parse application/x-www-
 app.use(bodyParser.json({ limit: "8mb" })); // parse application/json , files that are 8mb or less will be able to send.
 const port = process.env.PORT || 5050;
 app.use("/", require("./routes")); //all the routes are maitained in diffrenet folder
-const socketUserMapping = {};
+const socketUserMapping = {}; //to map users with there socket id.
 io.on("connection", (socket) => {
   // console.log(` new connection ${socket.id}`);
   socket.on(ACTIONS.JOIN, ({ roomId, user }) => {
@@ -64,15 +64,37 @@ io.on("connection", (socket) => {
       sessionDescription,
     });
   });
+  //handle mute
+
+  socket.on(ACTIONS.MUTE, ({ roomId, userId }) => {
+    const clients = Array.from(io.sockets.adapter.rooms.get(roomId) || []);
+    clients.forEach((clientId) => {
+      io.to(clientId).emit(ACTIONS.MUTE, {
+        peerId: socket.id,
+        userId,
+      });
+    });
+  });
+  //handle unmute
+  socket.on(ACTIONS.UNMUTE, ({ roomId, userId }) => {
+    const clients = Array.from(io.sockets.adapter.rooms.get(roomId) || []);
+    clients.forEach((clientId) => {
+      io.to(clientId).emit(ACTIONS.UNMUTE, {
+        peerId: socket.id,
+        userId,
+      });
+    });
+  });
 
   //leaving the room
-  socket.on(ACTIONS.LEAVE, (obj) => {
+
+  const leaveRoom = () => {
     const { rooms } = socket;
     Array.from(rooms).forEach((roomId) => {
       const clients = Array.from(io.sockets.adapter.rooms.get(roomId) || []);
-      console.log(clients);
+      // console.log(clients);
       clients.forEach((clientId) => {
-        console.log(clientId);
+        // console.log(clientId);
         io.to(clientId).emit(ACTIONS.REMOVE_PEER, {
           peerId: socket.id,
           userId: socketUserMapping[socket.id]?._id,
@@ -86,7 +108,10 @@ io.on("connection", (socket) => {
     });
 
     delete socketUserMapping[socket.id];
-  });
+  };
+
+  socket.on(ACTIONS.LEAVE, leaveRoom);
+  socket.on("disconnecting", leaveRoom);
 });
 
 server.listen(port, () => {
