@@ -56,7 +56,7 @@ const Room = () => {
         </div>
         <div className={styles.clientsList}>
           {clients.map((client) => {
-            console.dir(client);
+            // console.dir(client);
             return (
               <div className={styles.client} key={client._id}>
                 <div className={styles.userHead}>

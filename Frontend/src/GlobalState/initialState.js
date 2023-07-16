@@ -1,7 +1,7 @@
 export const initialState = {
   isAuth: false,
   user: null,
-  phone: "",
+  identifier: "",
   hash: "",
   name: "",
   avatar: "",
@@ -27,7 +27,7 @@ export const reducer = (state, action) => {
       return {
         ...state,
         hash: action.hash,
-        phone: action.phone,
+        identifier: action.identifier,
       };
     case actionTypes.SET_USER_NAME:
       return {

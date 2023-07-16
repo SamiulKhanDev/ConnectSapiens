@@ -1,7 +1,7 @@
 const RoomModel = require("../Models/room-model");
 class RoomService {
   async create({ topic, roomType, ownerId }) {
-    console.log(topic, roomType, ownerId);
+    // console.log(topic, roomType, ownerId);
     const room = await RoomModel.create({
       topic,
       roomType,

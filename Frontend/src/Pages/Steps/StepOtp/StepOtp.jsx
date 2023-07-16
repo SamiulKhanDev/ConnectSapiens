@@ -7,10 +7,10 @@ import { verifyOtp } from "../../../Https/http-service";
 import { useStateValue } from "../../../GlobalState/context";
 const StepOtp = ({ onClick }) => {
   const [otp, setOtp] = useState("");
-  const [{ phone, hash }, dispatch] = useStateValue();
+  const [{ identifier, hash }, dispatch] = useStateValue();
   const submit = async () => {
-    if (!phone || !hash || !otp) return;
-    const { data } = await verifyOtp({ phone, hash, otp });
+    if (!identifier || !hash || !otp) return;
+    const { data } = await verifyOtp({ identifier, hash, otp });
     dispatch({
       type: "SET_USER",
       user: data.user,

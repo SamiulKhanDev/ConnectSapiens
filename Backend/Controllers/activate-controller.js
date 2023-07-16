@@ -23,7 +23,7 @@ class ActivateController {
         .resize(150, jimp.AUTO)
         .write(path.resolve(__dirname, `../storage/${imagePath}`)); //[with in px, height auto so image dose nor streach],will store the image to the path;
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       return res.status(500).json({ error });
     }
 
@@ -39,7 +39,7 @@ class ActivateController {
       user.save();
       res.json({ user, auth: true });
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       return res.status(500).json({ error });
     }
   }

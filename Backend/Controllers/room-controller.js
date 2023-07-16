@@ -2,7 +2,7 @@ const roomService = require("../Services/room-service");
 class RoomsController {
   async create(req, res) {
     const { topic, roomType } = req.body;
-    console.log(topic, roomType, "5");
+    // console.log(topic, roomType, "5");
     if (!topic || !roomType)
       return res.status(400).json({ message: "all fields are required" });
 

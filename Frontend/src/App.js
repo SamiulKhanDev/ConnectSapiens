@@ -27,9 +27,9 @@ function App() {
   isAuth = obj.isAuth;
   user = obj.user;
 
-  console.log(isAuth);
-  console.log(user);
-  console.log(loading);
+  // console.log(isAuth);
+  // console.log(user);
+  // console.log(loading);
 
   return loading ? (
     <Loader message={"Loading, Please wait..."} />

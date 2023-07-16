@@ -20,7 +20,7 @@ const Rooms = () => {
 
   useEffect(() => {
     const fetchSameRooms = async (searchRoom) => {
-      console.log(searchRoom);
+      // console.log(searchRoom);
       const { data } = searchRoom
         ? await getAllRoomsByName({ searchRoom })
         : await getAllRooms();

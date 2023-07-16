@@ -5,24 +5,29 @@ const { tokenService } = require("../Services/token-service"); //to generate JWT
 class AuthController {
   async sendOtp(req, res) {
     // console.log(req.body);
-    const { phone } = req.body; //getting the phone number where we have to send the otp
+    const { identifier, type } = req.body; //getting the phone number where we have to send the otp
 
-    if (!phone) {
-      return res.status(400).json({ error: "phone number is required" }); //if phone number is not provided.
+    if (!identifier) {
+      return res.status(400).json({ error: "phone or email is required" }); //if phone number is not provided.
     }
     const otp = await otpService.generateOtp(); //if phone is provided generate otp.
 
     const ttl = 1000 * 60 * 2; //this otp will be valid only for 2 min; time to live .
     const expires = Date.now() + ttl; //calculating the expiry time by adding "ttl" with the current time.
-    const data = `${phone}.${otp}.${expires}`; //expires field is required to see if the otp is still time valid or not,and also it will make sure no one can manupulate the time field.[part 5 18:13min]
+    const data = `${identifier}.${otp}.${expires}`; //expires field is required to see if the otp is still time valid or not,and also it will make sure no one can manupulate the time field.[part 5 18:13min]
     const hashOtp = hashService.hashOtp(data); // creating a hash of the data.
 
     try {
-      // await otpService.sendBySms(phone, otp); //now sending the otp in the given number.
+      if (type === "Phone") {
+        await otpService.sendBySms(identifier, otp); //now sending the otp in the given number.
+      } else {
+        await otpService.sendByEmail(identifier, otp); //now sending the otp in the given email
+      }
+
       res.json({
         hash: `${hashOtp}.${expires}`,
         otp: otp,
-        phone: phone,
+        identifier: identifier,
       });
     } catch (error) {
       return res.status(500).json({ error: error });
@@ -32,8 +37,8 @@ class AuthController {
   async verifyOtp(req, res) {
     // const { refreshToken: refreshTokenCookie } = req.cookies;
     // console.log(refreshTokenCookie);
-    const { phone, hash, otp } = req.body; //we need all this three fields to regenaate the hash,and compare with the exsisting hashcode
-    if (!phone || !hash || !otp) {
+    const { identifier, hash, otp } = req.body; //we need all this three fields to regenaate the hash,and compare with the exsisting hashcode
+    if (!identifier || !hash || !otp) {
       return res.status(400).json({ error: "please provide all the values" }); //if any one of them is missing.
     }
 
@@ -44,7 +49,7 @@ class AuthController {
       return res.status(400).json({ error: "Otp hash been expired" });
     }
 
-    const data = `${phone}.${otp}.${expires}`; //recreating the value from which the original hash was created
+    const data = `${identifier}.${otp}.${expires}`; //recreating the value from which the original hash was created
     const isValid = otpService.verifyOtp(data, hashedOtp); //valideting the otp.
     if (!isValid) {
       return res.status(400).json({ error: "Otp is not valid" });
@@ -52,9 +57,9 @@ class AuthController {
     //as all is valid, now time create a new user
     let user;
     try {
-      user = await userService.findUser({ phone: phone }); //trying to find if the user is already in the db.
+      user = await userService.findUser({ identifier }); //trying to find if the user is already in the db.
       if (!user) {
-        user = await userService.createUser({ phone: phone }); //if it's a new user then only create new user in db.
+        user = await userService.createUser({ identifier }); //if it's a new user then only create new user in db.
       }
     } catch (error) {
       // console.log(error);
@@ -103,7 +108,7 @@ class AuthController {
       return res.status(401).json({ error: " invalid token 101" });
     }
     //check if the token is inside db.
-    console.log(userDetails);
+    // console.log(userDetails);
     try {
       const token = await tokenService.findRefreshToken(
         userDetails._id,

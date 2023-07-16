@@ -7,17 +7,17 @@ import { useStateValue } from "../../../../GlobalState/context";
 import styles from "../StepPhoneEmail.module.css";
 
 const Phone = ({ onClick }) => {
-  const [phoneNumber, setPhoneNumber] = useState("");
+  const [identifier, setIdentifier] = useState("");
   const [{}, dispatch] = useStateValue();
 
   async function submit() {
-    if (!phoneNumber) return;
-    const { data } = await sendOtp({ phone: phoneNumber });
+    if (!identifier) return;
+    const { data } = await sendOtp({ identifier, type: "Phone" });
     console.log(data);
     dispatch({
       type: "SET_OTP",
       hash: data.hash,
-      phone: data.phone,
+      identifier: data.identifier,
     });
     // console.log(hash, phone);
     onClick();
@@ -25,8 +25,8 @@ const Phone = ({ onClick }) => {
   return (
     <Card title={"Enter Your Phone Number"} icon={"/images/Emoji.png"}>
       <TextInput
-        value={phoneNumber}
-        onChange={(e) => setPhoneNumber(e.target.value)}
+        value={identifier}
+        onChange={(e) => setIdentifier(e.target.value)}
         onWheel={(e) => e.target.blur()}
         type="number"
         placeholder="Enter your phone number"
